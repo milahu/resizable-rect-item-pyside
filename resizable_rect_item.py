@@ -4,12 +4,12 @@
 
 import sys
 
-from PySide6.QtCore import (
+from PyQt6.QtCore import (
     Qt,
     QRectF,
     QPointF,
 )
-from PySide6.QtGui import (
+from PyQt6.QtGui import (
     QBrush,
     QPainterPath,
     QPainter,
@@ -17,7 +17,7 @@ from PySide6.QtGui import (
     QPen,
     QPixmap,
 )
-from PySide6.QtWidgets import (
+from PyQt6.QtWidgets import (
     QGraphicsRectItem,
     QApplication,
     QGraphicsView,
@@ -41,14 +41,14 @@ class ResizableRectItem(QGraphicsRectItem):
     handleSpace = -4.0
 
     handleCursors = (
-        Qt.SizeFDiagCursor, # handleTopLeft
-        Qt.SizeVerCursor, # handleTopMiddle
-        Qt.SizeBDiagCursor, # handleTopRight
-        Qt.SizeHorCursor, # handleMiddleLeft
-        Qt.SizeHorCursor, # handleMiddleRight
-        Qt.SizeBDiagCursor, # handleBottomLeft
-        Qt.SizeVerCursor, # handleBottomMiddle
-        Qt.SizeFDiagCursor, # handleBottomRight
+        Qt.CursorShape.SizeFDiagCursor, # handleTopLeft
+        Qt.CursorShape.SizeVerCursor, # handleTopMiddle
+        Qt.CursorShape.SizeBDiagCursor, # handleTopRight
+        Qt.CursorShape.SizeHorCursor, # handleMiddleLeft
+        Qt.CursorShape.SizeHorCursor, # handleMiddleRight
+        Qt.CursorShape.SizeBDiagCursor, # handleBottomLeft
+        Qt.CursorShape.SizeVerCursor, # handleBottomMiddle
+        Qt.CursorShape.SizeFDiagCursor, # handleBottomRight
     )
 
     def __init__(self, *args):
@@ -61,10 +61,10 @@ class ResizableRectItem(QGraphicsRectItem):
         self.mousePressPos = None
         self.mousePressRect = None
         self.setAcceptHoverEvents(True)
-        self.setFlag(QGraphicsItem.ItemIsMovable, True)
-        self.setFlag(QGraphicsItem.ItemIsSelectable, True)
-        self.setFlag(QGraphicsItem.ItemSendsGeometryChanges, True)
-        self.setFlag(QGraphicsItem.ItemIsFocusable, True)
+        self.setFlag(QGraphicsItem.GraphicsItemFlag.ItemIsMovable, True)
+        self.setFlag(QGraphicsItem.GraphicsItemFlag.ItemIsSelectable, True)
+        self.setFlag(QGraphicsItem.GraphicsItemFlag.ItemSendsGeometryChanges, True)
+        self.setFlag(QGraphicsItem.GraphicsItemFlag.ItemIsFocusable, True)
         self.updateHandlesPos()
 
     def handleAt(self, point):
@@ -82,7 +82,7 @@ class ResizableRectItem(QGraphicsRectItem):
         """
         if self.isSelected():
             handle = self.handleAt(moveEvent.pos())
-            cursor = Qt.ArrowCursor if handle is None else self.handleCursors[handle]
+            cursor = Qt.CursorShape.ArrowCursor if handle is None else self.handleCursors[handle]
             self.setCursor(cursor)
         super().hoverMoveEvent(moveEvent)
 
@@ -90,7 +90,7 @@ class ResizableRectItem(QGraphicsRectItem):
         """
         Executed when the mouse leaves the shape (NOT PRESSED).
         """
-        self.setCursor(Qt.ArrowCursor)
+        self.setCursor(Qt.CursorShape.ArrowCursor)
         super().hoverLeaveEvent(moveEvent)
 
     def mousePressEvent(self, mouseEvent):
@@ -265,12 +265,12 @@ class ResizableRectItem(QGraphicsRectItem):
         Paint the node in the graphic view.
         """
         painter.setBrush(QBrush(QColor(255, 0, 0, 100)))
-        painter.setPen(QPen(QColor(0, 0, 0), 1.0, Qt.SolidLine))
+        painter.setPen(QPen(QColor(0, 0, 0), 1.0, Qt.PenStyle.SolidLine))
         painter.drawRect(self.rect())
 
-        painter.setRenderHint(QPainter.Antialiasing)
+        painter.setRenderHint(QPainter.RenderHint.Antialiasing)
         painter.setBrush(QBrush(QColor(255, 0, 0, 255)))
-        painter.setPen(QPen(QColor(0, 0, 0, 255), 1.0, Qt.SolidLine, Qt.RoundCap, Qt.RoundJoin))
+        painter.setPen(QPen(QColor(0, 0, 0, 255), 1.0, Qt.PenStyle.SolidLine, Qt.PenCapStyle.RoundCap, Qt.PenJoinStyle.RoundJoin))
         for handle, rect in enumerate(self.handles):
             if self.handleSelected is None or handle == self.handleSelected:
                 painter.drawEllipse(rect)
@@ -290,7 +290,7 @@ def main():
     item = ResizableRectItem(0, 0, 300, 150)
     scene.addItem(item)
 
-    grview.fitInView(scene.sceneRect(), Qt.KeepAspectRatio)
+    grview.fitInView(scene.sceneRect(), Qt.AspectRatioMode.KeepAspectRatio)
     grview.show()
     sys.exit(app.exec())
 
