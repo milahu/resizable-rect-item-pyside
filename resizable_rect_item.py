@@ -69,7 +69,7 @@ class ResizableRectItem(QGraphicsRectItem):
         self.initHandles()
         # Executed when the mouse is being moved over the item while being pressed.
         self.mouseMoveEvent = self.mouseMoveEventCenter
-        self.mouseMoveEventByHandle = [
+        self.mouseMoveEventByHandle = (
             self.mouseMoveEventTopLeft,
             self.mouseMoveEventTopMiddle,
             self.mouseMoveEventTopRight,
@@ -78,7 +78,7 @@ class ResizableRectItem(QGraphicsRectItem):
             self.mouseMoveEventBottomLeft,
             self.mouseMoveEventBottomMiddle,
             self.mouseMoveEventBottomRight,
-        ]
+        )
         debug = False
         # debug = True
         if debug:
