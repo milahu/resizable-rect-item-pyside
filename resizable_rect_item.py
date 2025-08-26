@@ -9,7 +9,7 @@ from PyQt5.QtGui import QBrush, QPainterPath, QPainter, QColor, QPen, QPixmap
 from PyQt5.QtWidgets import QGraphicsRectItem, QApplication, QGraphicsView, QGraphicsScene, QGraphicsItem
 
 
-class GraphicsRectItem(QGraphicsRectItem):
+class ResizableRectItem(QGraphicsRectItem):
 
     handleTopLeft = 1
     handleTopMiddle = 2
@@ -270,7 +270,7 @@ def main():
     scene.addPixmap(QPixmap('01.png'))
     grview.setScene(scene)
 
-    item = GraphicsRectItem(0, 0, 300, 150)
+    item = ResizableRectItem(0, 0, 300, 150)
     scene.addItem(item)
 
     grview.fitInView(scene.sceneRect(), Qt.KeepAspectRatio)
