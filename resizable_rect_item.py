@@ -66,6 +66,18 @@ class ResizableRectItem(QGraphicsRectItem):
         self.setFlag(QGraphicsItem.ItemSendsGeometryChanges, True)
         self.setFlag(QGraphicsItem.ItemIsFocusable, True)
         self.updateHandlesPos()
+        # Executed when the mouse is being moved over the item while being pressed.
+        self.mouseMoveEvent = self.mouseMoveEventCenter
+        self.mouseMoveEventByHandle = [
+            self.mouseMoveEventTopLeft,
+            self.mouseMoveEventTopMiddle,
+            self.mouseMoveEventTopRight,
+            self.mouseMoveEventMiddleLeft,
+            self.mouseMoveEventMiddleRight,
+            self.mouseMoveEventBottomLeft,
+            self.mouseMoveEventBottomMiddle,
+            self.mouseMoveEventBottomRight,
+        ]
 
     def handleAt(self, point):
         """
@@ -101,16 +113,10 @@ class ResizableRectItem(QGraphicsRectItem):
         if self.handleSelected is not None:
             self.mousePressPos = mouseEvent.pos()
             self.mousePressRect = self.boundingRect()
-        super().mousePressEvent(mouseEvent)
-
-    def mouseMoveEvent(self, mouseEvent):
-        """
-        Executed when the mouse is being moved over the item while being pressed.
-        """
-        if self.handleSelected is not None:
-            self.interactiveResize(mouseEvent.pos())
+            self.mouseMoveEvent = self.mouseMoveEventByHandle[self.handleSelected]
         else:
-            super().mouseMoveEvent(mouseEvent)
+            self.mouseMoveEvent = self.mouseMoveEventCenter
+        super().mousePressEvent(mouseEvent)
 
     def mouseReleaseEvent(self, mouseEvent):
         """
@@ -144,10 +150,14 @@ class ResizableRectItem(QGraphicsRectItem):
         self.handles[self.handleBottomMiddle] = QRectF(b.center().x() - s / 2, b.bottom() - s, s, s)
         self.handles[self.handleBottomRight] = QRectF(b.right() - s, b.bottom() - s, s, s)
 
-    def interactiveResize(self, mousePos):
+    def mouseMoveEventCenter(self, mouseEvent):
+        super().mouseMoveEvent(mouseEvent)
+
+    def mouseMoveEventTopLeft(self, mouseEvent):
         """
         Perform shape interactive resize.
         """
+        mousePos = mouseEvent.pos()
         offset = self.handleSize + self.handleSpace
         boundingRect = self.boundingRect()
         rect = self.rect()
@@ -155,97 +165,179 @@ class ResizableRectItem(QGraphicsRectItem):
 
         self.prepareGeometryChange()
 
-        if self.handleSelected == self.handleTopLeft:
+        fromX = self.mousePressRect.left()
+        fromY = self.mousePressRect.top()
+        toX = fromX + mousePos.x() - self.mousePressPos.x()
+        toY = fromY + mousePos.y() - self.mousePressPos.y()
+        diff.setX(toX - fromX)
+        diff.setY(toY - fromY)
+        boundingRect.setLeft(toX)
+        boundingRect.setTop(toY)
+        rect.setLeft(boundingRect.left() + offset)
+        rect.setTop(boundingRect.top() + offset)
+        self.setRect(rect)
 
-            fromX = self.mousePressRect.left()
-            fromY = self.mousePressRect.top()
-            toX = fromX + mousePos.x() - self.mousePressPos.x()
-            toY = fromY + mousePos.y() - self.mousePressPos.y()
-            diff.setX(toX - fromX)
-            diff.setY(toY - fromY)
-            boundingRect.setLeft(toX)
-            boundingRect.setTop(toY)
-            rect.setLeft(boundingRect.left() + offset)
-            rect.setTop(boundingRect.top() + offset)
-            self.setRect(rect)
+        self.updateHandlesPos()
 
-        elif self.handleSelected == self.handleTopMiddle:
+    def mouseMoveEventTopMiddle(self, mouseEvent):
+        """
+        Perform shape interactive resize.
+        """
+        mousePos = mouseEvent.pos()
+        offset = self.handleSize + self.handleSpace
+        boundingRect = self.boundingRect()
+        rect = self.rect()
+        diff = QPointF(0, 0)
 
-            fromY = self.mousePressRect.top()
-            toY = fromY + mousePos.y() - self.mousePressPos.y()
-            diff.setY(toY - fromY)
-            boundingRect.setTop(toY)
-            rect.setTop(boundingRect.top() + offset)
-            self.setRect(rect)
+        self.prepareGeometryChange()
 
-        elif self.handleSelected == self.handleTopRight:
+        fromY = self.mousePressRect.top()
+        toY = fromY + mousePos.y() - self.mousePressPos.y()
+        diff.setY(toY - fromY)
+        boundingRect.setTop(toY)
+        rect.setTop(boundingRect.top() + offset)
+        self.setRect(rect)
 
-            fromX = self.mousePressRect.right()
-            fromY = self.mousePressRect.top()
-            toX = fromX + mousePos.x() - self.mousePressPos.x()
-            toY = fromY + mousePos.y() - self.mousePressPos.y()
-            diff.setX(toX - fromX)
-            diff.setY(toY - fromY)
-            boundingRect.setRight(toX)
-            boundingRect.setTop(toY)
-            rect.setRight(boundingRect.right() - offset)
-            rect.setTop(boundingRect.top() + offset)
-            self.setRect(rect)
+        self.updateHandlesPos()
 
-        elif self.handleSelected == self.handleMiddleLeft:
+    def mouseMoveEventTopRight(self, mouseEvent):
+        """
+        Perform shape interactive resize.
+        """
+        mousePos = mouseEvent.pos()
+        offset = self.handleSize + self.handleSpace
+        boundingRect = self.boundingRect()
+        rect = self.rect()
+        diff = QPointF(0, 0)
 
-            fromX = self.mousePressRect.left()
-            toX = fromX + mousePos.x() - self.mousePressPos.x()
-            diff.setX(toX - fromX)
-            boundingRect.setLeft(toX)
-            rect.setLeft(boundingRect.left() + offset)
-            self.setRect(rect)
+        self.prepareGeometryChange()
 
-        elif self.handleSelected == self.handleMiddleRight:
+        fromX = self.mousePressRect.right()
+        fromY = self.mousePressRect.top()
+        toX = fromX + mousePos.x() - self.mousePressPos.x()
+        toY = fromY + mousePos.y() - self.mousePressPos.y()
+        diff.setX(toX - fromX)
+        diff.setY(toY - fromY)
+        boundingRect.setRight(toX)
+        boundingRect.setTop(toY)
+        rect.setRight(boundingRect.right() - offset)
+        rect.setTop(boundingRect.top() + offset)
+        self.setRect(rect)
 
-            fromX = self.mousePressRect.right()
-            toX = fromX + mousePos.x() - self.mousePressPos.x()
-            diff.setX(toX - fromX)
-            boundingRect.setRight(toX)
-            rect.setRight(boundingRect.right() - offset)
-            self.setRect(rect)
+        self.updateHandlesPos()
 
-        elif self.handleSelected == self.handleBottomLeft:
+    def mouseMoveEventMiddleLeft(self, mouseEvent):
+        """
+        Perform shape interactive resize.
+        """
+        mousePos = mouseEvent.pos()
+        offset = self.handleSize + self.handleSpace
+        boundingRect = self.boundingRect()
+        rect = self.rect()
+        diff = QPointF(0, 0)
 
-            fromX = self.mousePressRect.left()
-            fromY = self.mousePressRect.bottom()
-            toX = fromX + mousePos.x() - self.mousePressPos.x()
-            toY = fromY + mousePos.y() - self.mousePressPos.y()
-            diff.setX(toX - fromX)
-            diff.setY(toY - fromY)
-            boundingRect.setLeft(toX)
-            boundingRect.setBottom(toY)
-            rect.setLeft(boundingRect.left() + offset)
-            rect.setBottom(boundingRect.bottom() - offset)
-            self.setRect(rect)
+        self.prepareGeometryChange()
 
-        elif self.handleSelected == self.handleBottomMiddle:
+        fromX = self.mousePressRect.left()
+        toX = fromX + mousePos.x() - self.mousePressPos.x()
+        diff.setX(toX - fromX)
+        boundingRect.setLeft(toX)
+        rect.setLeft(boundingRect.left() + offset)
+        self.setRect(rect)
 
-            fromY = self.mousePressRect.bottom()
-            toY = fromY + mousePos.y() - self.mousePressPos.y()
-            diff.setY(toY - fromY)
-            boundingRect.setBottom(toY)
-            rect.setBottom(boundingRect.bottom() - offset)
-            self.setRect(rect)
+        self.updateHandlesPos()
 
-        elif self.handleSelected == self.handleBottomRight:
+    def mouseMoveEventMiddleRight(self, mouseEvent):
+        """
+        Perform shape interactive resize.
+        """
+        mousePos = mouseEvent.pos()
+        offset = self.handleSize + self.handleSpace
+        boundingRect = self.boundingRect()
+        rect = self.rect()
+        diff = QPointF(0, 0)
 
-            fromX = self.mousePressRect.right()
-            fromY = self.mousePressRect.bottom()
-            toX = fromX + mousePos.x() - self.mousePressPos.x()
-            toY = fromY + mousePos.y() - self.mousePressPos.y()
-            diff.setX(toX - fromX)
-            diff.setY(toY - fromY)
-            boundingRect.setRight(toX)
-            boundingRect.setBottom(toY)
-            rect.setRight(boundingRect.right() - offset)
-            rect.setBottom(boundingRect.bottom() - offset)
-            self.setRect(rect)
+        self.prepareGeometryChange()
+
+        fromX = self.mousePressRect.right()
+        toX = fromX + mousePos.x() - self.mousePressPos.x()
+        diff.setX(toX - fromX)
+        boundingRect.setRight(toX)
+        rect.setRight(boundingRect.right() - offset)
+        self.setRect(rect)
+
+        self.updateHandlesPos()
+
+    def mouseMoveEventBottomLeft(self, mouseEvent):
+        """
+        Perform shape interactive resize.
+        """
+        mousePos = mouseEvent.pos()
+        offset = self.handleSize + self.handleSpace
+        boundingRect = self.boundingRect()
+        rect = self.rect()
+        diff = QPointF(0, 0)
+
+        self.prepareGeometryChange()
+
+        fromX = self.mousePressRect.left()
+        fromY = self.mousePressRect.bottom()
+        toX = fromX + mousePos.x() - self.mousePressPos.x()
+        toY = fromY + mousePos.y() - self.mousePressPos.y()
+        diff.setX(toX - fromX)
+        diff.setY(toY - fromY)
+        boundingRect.setLeft(toX)
+        boundingRect.setBottom(toY)
+        rect.setLeft(boundingRect.left() + offset)
+        rect.setBottom(boundingRect.bottom() - offset)
+        self.setRect(rect)
+
+        self.updateHandlesPos()
+
+    def mouseMoveEventBottomMiddle(self, mouseEvent):
+        """
+        Perform shape interactive resize.
+        """
+        mousePos = mouseEvent.pos()
+        offset = self.handleSize + self.handleSpace
+        boundingRect = self.boundingRect()
+        rect = self.rect()
+        diff = QPointF(0, 0)
+
+        self.prepareGeometryChange()
+
+        fromY = self.mousePressRect.bottom()
+        toY = fromY + mousePos.y() - self.mousePressPos.y()
+        diff.setY(toY - fromY)
+        boundingRect.setBottom(toY)
+        rect.setBottom(boundingRect.bottom() - offset)
+        self.setRect(rect)
+
+        self.updateHandlesPos()
+
+    def mouseMoveEventBottomRight(self, mouseEvent):
+        """
+        Perform shape interactive resize.
+        """
+        mousePos = mouseEvent.pos()
+        offset = self.handleSize + self.handleSpace
+        boundingRect = self.boundingRect()
+        rect = self.rect()
+        diff = QPointF(0, 0)
+
+        self.prepareGeometryChange()
+
+        fromX = self.mousePressRect.right()
+        fromY = self.mousePressRect.bottom()
+        toX = fromX + mousePos.x() - self.mousePressPos.x()
+        toY = fromY + mousePos.y() - self.mousePressPos.y()
+        diff.setX(toX - fromX)
+        diff.setY(toY - fromY)
+        boundingRect.setRight(toX)
+        boundingRect.setBottom(toY)
+        rect.setRight(boundingRect.right() - offset)
+        rect.setBottom(boundingRect.bottom() - offset)
+        self.setRect(rect)
 
         self.updateHandlesPos()
 
