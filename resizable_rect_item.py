@@ -267,7 +267,7 @@ def main():
     scene = QGraphicsScene()
     scene.setSceneRect(0, 0, 680, 459)
 
-    scene.addPixmap(QPixmap('01.png'))
+    scene.addPixmap(QPixmap('qt.png'))
     grview.setScene(scene)
 
     item = ResizableRectItem(0, 0, 300, 150)
