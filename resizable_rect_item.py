@@ -161,27 +161,19 @@ class ResizableRectItem(QGraphicsRectItem):
 
     def initHandles(self):
         """
-        Init current resize handles according to the shape size and position.
+        Init resize handles.
         """
-        b = self.boundingRect()
-        s1 = self.handleSizeRel
-        s2 = 1 - 2 * s1
-        L = b.left()
-        T = b.top()
-        R = b.right()
-        B = b.bottom()
-        W = b.width()
-        H = b.height()
         self.handles = (
-            QRectF(L, T, s1 * W, s1 * H), # handleTopLeft
-            QRectF(L + s1 * W, T, s2 * W, s1 * H), # handleTopMiddle
-            QRectF(R - s1 * W, T, s1 * W, s1 * H), # handleTopRight
-            QRectF(L, T + s1 * H, s1 * W, s2 * H), # handleMiddleLeft
-            QRectF(R - s1 * W, T + s1 * H, s1 * W, s2 * H), # handleMiddleRight
-            QRectF(L, B - s1 * H, s1 * W, s1 * H), # handleBottomLeft
-            QRectF(L + s1 * W, B - s1 * H, s2 * W, s1 * H), # handleBottomMiddle
-            QRectF(R - s1 * W, B - s1 * H, s1 * W, s1 * H), # handleBottomRight
+            QRectF(0, 0, 0, 0),
+            QRectF(0, 0, 0, 0),
+            QRectF(0, 0, 0, 0),
+            QRectF(0, 0, 0, 0),
+            QRectF(0, 0, 0, 0),
+            QRectF(0, 0, 0, 0),
+            QRectF(0, 0, 0, 0),
+            QRectF(0, 0, 0, 0),
         )
+        self.updateHandlesPos()
 
     def updateHandlesPos(self):
         """
