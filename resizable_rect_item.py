@@ -65,7 +65,7 @@ class ResizableRectItem(QGraphicsRectItem):
         self.setFlag(QGraphicsItem.ItemIsSelectable, True)
         self.setFlag(QGraphicsItem.ItemSendsGeometryChanges, True)
         self.setFlag(QGraphicsItem.ItemIsFocusable, True)
-        self.updateHandlesPos()
+        self.initHandles()
         # Executed when the mouse is being moved over the item while being pressed.
         self.mouseMoveEvent = self.mouseMoveEventCenter
         self.mouseMoveEventByHandle = [
@@ -135,9 +135,9 @@ class ResizableRectItem(QGraphicsRectItem):
         o = self.handleSize + self.handleSpace
         return self.rect().adjusted(-o, -o, o, o)
 
-    def updateHandlesPos(self):
+    def initHandles(self):
         """
-        Update current resize handles according to the shape size and position.
+        Init current resize handles according to the shape size and position.
         """
         s = self.handleSize
         b = self.boundingRect()
@@ -149,6 +149,21 @@ class ResizableRectItem(QGraphicsRectItem):
         self.handles[self.handleBottomLeft] = QRectF(b.left(), b.bottom() - s, s, s)
         self.handles[self.handleBottomMiddle] = QRectF(b.center().x() - s / 2, b.bottom() - s, s, s)
         self.handles[self.handleBottomRight] = QRectF(b.right() - s, b.bottom() - s, s, s)
+
+    def updateHandlesPos(self):
+        """
+        Update current resize handles according to the shape size and position.
+        """
+        s = self.handleSize
+        b = self.boundingRect()
+        self.handles[self.handleTopLeft].setRect(b.left(), b.top(), s, s)
+        self.handles[self.handleTopMiddle].setRect(b.center().x() - s / 2, b.top(), s, s)
+        self.handles[self.handleTopRight].setRect(b.right() - s, b.top(), s, s)
+        self.handles[self.handleMiddleLeft].setRect(b.left(), b.center().y() - s / 2, s, s)
+        self.handles[self.handleMiddleRight].setRect(b.right() - s, b.center().y() - s / 2, s, s)
+        self.handles[self.handleBottomLeft].setRect(b.left(), b.bottom() - s, s, s)
+        self.handles[self.handleBottomMiddle].setRect(b.center().x() - s / 2, b.bottom() - s, s, s)
+        self.handles[self.handleBottomRight].setRect(b.right() - s, b.bottom() - s, s, s)
 
     def mouseMoveEventCenter(self, mouseEvent):
         super().mouseMoveEvent(mouseEvent)
