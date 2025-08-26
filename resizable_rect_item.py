@@ -202,7 +202,7 @@ class ResizableRectItem(QGraphicsRectItem):
             self.setRect(rect)
 
         elif self.handleSelected == self.handleMiddleRight:
-            print("MR")
+
             fromX = self.mousePressRect.right()
             toX = fromX + mousePos.x() - self.mousePressPos.x()
             diff.setX(toX - fromX)
