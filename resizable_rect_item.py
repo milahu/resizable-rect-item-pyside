@@ -52,11 +52,18 @@ class ResizableRectItem(QGraphicsRectItem):
         Qt.SizeFDiagCursor, # handleBottomRight
     )
 
-    def __init__(self, *args):
+    def __init__(
+            self,
+            *args,
+            move_done_cb=None,
+            resize_done_cb=None,
+        ):
         """
         Initialize the shape.
         """
         super().__init__(*args)
+        self.move_done_cb = move_done_cb or (lambda *args: None)
+        self.resize_done_cb = resize_done_cb or (lambda *args: None)
         self.handleSelected = None
         self.mousePressPos = None
         self.mousePressRect = None
@@ -115,21 +122,34 @@ class ResizableRectItem(QGraphicsRectItem):
         Executed when the mouse is pressed on the item.
         """
         self.handleSelected = self.handleAt(mouseEvent.pos())
+        self.mousePressRect = self.boundingRect()
+        self.mousePressScenePos = self.scenePos()
         if self.handleSelected is not None:
+            # resizing
             self.mousePressPos = mouseEvent.pos()
-            self.mousePressRect = self.boundingRect()
             self.mouseMoveEvent = self.mouseMoveEventByHandle[self.handleSelected]
         else:
+            # moving
             self.mouseMoveEvent = self.mouseMoveEventCenter
         super().mousePressEvent(mouseEvent)
 
     def mouseReleaseEvent(self, mouseEvent):
-        """
-        Executed when the mouse is released from the item.
-        """
+        if self.handleSelected is not None:
+            # resizing
+            rect1 = self.mapRectToScene(self.mousePressRect)
+            rect2 = self.mapRectToScene(self.rect())
+            if rect1 != rect2:
+                self.resize_done_cb(rect1, rect2)
+        else:
+            # moving
+            pos1 = self.mousePressScenePos
+            pos2 = self.scenePos()
+            if pos1 != pos2:
+                self.move_done_cb(pos1, pos2)
         super().mouseReleaseEvent(mouseEvent)
         self.handleSelected = None
         self.mousePressPos = None
+        self.mousePressScenePos = None
         self.mousePressRect = None
         self.update()
 
@@ -375,7 +395,17 @@ def main():
     scene.addPixmap(QPixmap('qt.png'))
     grview.setScene(scene)
 
-    item = ResizableRectItem(0, 0, 300, 150)
+    def move_done_cb(pos1, pos2):
+        print(f"move_done_cb: {pos1} -> {pos2}")
+
+    def resize_done_cb(rect1, rect2):
+        print(f"resize_done_cb: {rect1} -> {rect2}")
+
+    item = ResizableRectItem(
+        0, 0, 300, 150,
+        move_done_cb=move_done_cb,
+        resize_done_cb=resize_done_cb,
+    )
     scene.addItem(item)
 
     grview.fitInView(scene.sceneRect(), Qt.KeepAspectRatio)
