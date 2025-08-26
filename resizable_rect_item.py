@@ -1,5 +1,6 @@
 #!/usr/bin/env python3
 
+# source https://github.com/milahu/resizable-rect-item-pyside
 # based on https://stackoverflow.com/a/34442054/10440128
 
 import sys
