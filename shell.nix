@@ -5,7 +5,7 @@
 pkgs.mkShell {
   buildInputs = with pkgs; [
     (python3.withPackages (pp: with pp; [
-      pyqt5
+      pyside6
     ]))
   ];
 }

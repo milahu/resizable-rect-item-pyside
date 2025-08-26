@@ -4,9 +4,26 @@
 
 import sys
 
-from PyQt5.QtCore import Qt, QRectF, QPointF
-from PyQt5.QtGui import QBrush, QPainterPath, QPainter, QColor, QPen, QPixmap
-from PyQt5.QtWidgets import QGraphicsRectItem, QApplication, QGraphicsView, QGraphicsScene, QGraphicsItem
+from PySide6.QtCore import (
+    Qt,
+    QRectF,
+    QPointF,
+)
+from PySide6.QtGui import (
+    QBrush,
+    QPainterPath,
+    QPainter,
+    QColor,
+    QPen,
+    QPixmap,
+)
+from PySide6.QtWidgets import (
+    QGraphicsRectItem,
+    QApplication,
+    QGraphicsView,
+    QGraphicsScene,
+    QGraphicsItem,
+)
 
 
 class ResizableRectItem(QGraphicsRectItem):
@@ -275,7 +292,7 @@ def main():
 
     grview.fitInView(scene.sceneRect(), Qt.KeepAspectRatio)
     grview.show()
-    sys.exit(app.exec_())
+    sys.exit(app.exec())
 
 
 if __name__ == '__main__':
