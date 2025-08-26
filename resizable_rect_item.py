@@ -79,6 +79,10 @@ class ResizableRectItem(QGraphicsRectItem):
             self.mouseMoveEventBottomMiddle,
             self.mouseMoveEventBottomRight,
         ]
+        debug = False
+        # debug = True
+        if debug:
+            self.paint = self.paintDebug
 
     def handleAt(self, point):
         """
@@ -343,7 +347,7 @@ class ResizableRectItem(QGraphicsRectItem):
 
         self.updateHandlesPos()
 
-    def paint(self, painter, option, widget=None):
+    def paintDebug(self, painter, option, widget=None):
         """
         Paint the node in the graphic view.
         """
