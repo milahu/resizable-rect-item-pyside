@@ -37,8 +37,9 @@ class ResizableRectItem(QGraphicsRectItem):
     handleBottomMiddle = 6
     handleBottomRight = 7
 
-    handleSize = +8.0
-    handleSpace = -4.0
+    handleSizeRel = 0.25
+    # handleSizeRel = 0.2
+    # handleSizeRel = 0.125
 
     handleCursors = (
         Qt.SizeFDiagCursor, # handleTopLeft
@@ -62,7 +63,7 @@ class ResizableRectItem(QGraphicsRectItem):
         self.mousePressRect = None
         self.setAcceptHoverEvents(True)
         self.setFlag(QGraphicsItem.ItemIsMovable, True)
-        self.setFlag(QGraphicsItem.ItemIsSelectable, True)
+        # self.setFlag(QGraphicsItem.ItemIsSelectable, True)
         self.setFlag(QGraphicsItem.ItemSendsGeometryChanges, True)
         self.setFlag(QGraphicsItem.ItemIsFocusable, True)
         self.initHandles()
@@ -92,8 +93,9 @@ class ResizableRectItem(QGraphicsRectItem):
         """
         Executed when the mouse moves over the shape (NOT PRESSED).
         """
-        if self.isSelected():
+        if 1:
             handle = self.handleAt(moveEvent.pos())
+            # cursor = Qt.SizeAllCursor if handle is None else self.handleCursors[handle]
             cursor = Qt.ArrowCursor if handle is None else self.handleCursors[handle]
             self.setCursor(cursor)
         super().hoverMoveEvent(moveEvent)
@@ -132,38 +134,51 @@ class ResizableRectItem(QGraphicsRectItem):
         """
         Returns the bounding rect of the shape (including the resize handles).
         """
-        o = self.handleSize + self.handleSpace
-        return self.rect().adjusted(-o, -o, o, o)
+        return self.rect()
 
     def initHandles(self):
         """
         Init current resize handles according to the shape size and position.
         """
-        s = self.handleSize
         b = self.boundingRect()
-        self.handles[self.handleTopLeft] = QRectF(b.left(), b.top(), s, s)
-        self.handles[self.handleTopMiddle] = QRectF(b.center().x() - s / 2, b.top(), s, s)
-        self.handles[self.handleTopRight] = QRectF(b.right() - s, b.top(), s, s)
-        self.handles[self.handleMiddleLeft] = QRectF(b.left(), b.center().y() - s / 2, s, s)
-        self.handles[self.handleMiddleRight] = QRectF(b.right() - s, b.center().y() - s / 2, s, s)
-        self.handles[self.handleBottomLeft] = QRectF(b.left(), b.bottom() - s, s, s)
-        self.handles[self.handleBottomMiddle] = QRectF(b.center().x() - s / 2, b.bottom() - s, s, s)
-        self.handles[self.handleBottomRight] = QRectF(b.right() - s, b.bottom() - s, s, s)
+        s1 = self.handleSizeRel
+        s2 = 1 - 2 * s1
+        L = b.left()
+        T = b.top()
+        R = b.right()
+        B = b.bottom()
+        W = b.width()
+        H = b.height()
+        self.handles[self.handleTopLeft] = QRectF(L, T, s1 * W, s1 * H)
+        self.handles[self.handleTopMiddle] = QRectF(L + s1 * W, T, s2 * W, s1 * H)
+        self.handles[self.handleTopRight] = QRectF(R - s1 * W, T, s1 * W, s1 * H)
+        self.handles[self.handleMiddleLeft] = QRectF(L, T + s1 * H, s1 * W, s2 * H)
+        self.handles[self.handleMiddleRight] = QRectF(R - s1 * W, T + s1 * H, s1 * W, s2 * H)
+        self.handles[self.handleBottomLeft] = QRectF(L, B - s1 * H, s1 * W, s1 * H)
+        self.handles[self.handleBottomMiddle] = QRectF(L + s1 * W, B - s1 * H, s2 * W, s1 * H)
+        self.handles[self.handleBottomRight] = QRectF(R - s1 * W, B - s1 * H, s1 * W, s1 * H)
 
     def updateHandlesPos(self):
         """
         Update current resize handles according to the shape size and position.
         """
-        s = self.handleSize
         b = self.boundingRect()
-        self.handles[self.handleTopLeft].setRect(b.left(), b.top(), s, s)
-        self.handles[self.handleTopMiddle].setRect(b.center().x() - s / 2, b.top(), s, s)
-        self.handles[self.handleTopRight].setRect(b.right() - s, b.top(), s, s)
-        self.handles[self.handleMiddleLeft].setRect(b.left(), b.center().y() - s / 2, s, s)
-        self.handles[self.handleMiddleRight].setRect(b.right() - s, b.center().y() - s / 2, s, s)
-        self.handles[self.handleBottomLeft].setRect(b.left(), b.bottom() - s, s, s)
-        self.handles[self.handleBottomMiddle].setRect(b.center().x() - s / 2, b.bottom() - s, s, s)
-        self.handles[self.handleBottomRight].setRect(b.right() - s, b.bottom() - s, s, s)
+        s1 = self.handleSizeRel
+        s2 = 1 - 2 * s1
+        L = b.left()
+        T = b.top()
+        R = b.right()
+        B = b.bottom()
+        W = b.width()
+        H = b.height()
+        self.handles[self.handleTopLeft].setRect(L, T, s1 * W, s1 * H)
+        self.handles[self.handleTopMiddle].setRect(L + s1 * W, T, s2 * W, s1 * H)
+        self.handles[self.handleTopRight].setRect(R - s1 * W, T, s1 * W, s1 * H)
+        self.handles[self.handleMiddleLeft].setRect(L, T + s1 * H, s1 * W, s2 * H)
+        self.handles[self.handleMiddleRight].setRect(R - s1 * W, T + s1 * H, s1 * W, s2 * H)
+        self.handles[self.handleBottomLeft].setRect(L, B - s1 * H, s1 * W, s1 * H)
+        self.handles[self.handleBottomMiddle].setRect(L + s1 * W, B - s1 * H, s2 * W, s1 * H)
+        self.handles[self.handleBottomRight].setRect(R - s1 * W, B - s1 * H, s1 * W, s1 * H)
 
     def mouseMoveEventCenter(self, mouseEvent):
         super().mouseMoveEvent(mouseEvent)
@@ -173,7 +188,6 @@ class ResizableRectItem(QGraphicsRectItem):
         Perform shape interactive resize.
         """
         mousePos = mouseEvent.pos()
-        offset = self.handleSize + self.handleSpace
         boundingRect = self.boundingRect()
         rect = self.rect()
 
@@ -185,8 +199,8 @@ class ResizableRectItem(QGraphicsRectItem):
         toY = fromY + mousePos.y() - self.mousePressPos.y()
         boundingRect.setLeft(toX)
         boundingRect.setTop(toY)
-        rect.setLeft(boundingRect.left() + offset)
-        rect.setTop(boundingRect.top() + offset)
+        rect.setLeft(boundingRect.left())
+        rect.setTop(boundingRect.top())
         self.setRect(rect)
 
         self.updateHandlesPos()
@@ -196,7 +210,6 @@ class ResizableRectItem(QGraphicsRectItem):
         Perform shape interactive resize.
         """
         mousePos = mouseEvent.pos()
-        offset = self.handleSize + self.handleSpace
         boundingRect = self.boundingRect()
         rect = self.rect()
 
@@ -205,7 +218,7 @@ class ResizableRectItem(QGraphicsRectItem):
         fromY = self.mousePressRect.top()
         toY = fromY + mousePos.y() - self.mousePressPos.y()
         boundingRect.setTop(toY)
-        rect.setTop(boundingRect.top() + offset)
+        rect.setTop(boundingRect.top())
         self.setRect(rect)
 
         self.updateHandlesPos()
@@ -215,7 +228,6 @@ class ResizableRectItem(QGraphicsRectItem):
         Perform shape interactive resize.
         """
         mousePos = mouseEvent.pos()
-        offset = self.handleSize + self.handleSpace
         boundingRect = self.boundingRect()
         rect = self.rect()
 
@@ -227,8 +239,8 @@ class ResizableRectItem(QGraphicsRectItem):
         toY = fromY + mousePos.y() - self.mousePressPos.y()
         boundingRect.setRight(toX)
         boundingRect.setTop(toY)
-        rect.setRight(boundingRect.right() - offset)
-        rect.setTop(boundingRect.top() + offset)
+        rect.setRight(boundingRect.right())
+        rect.setTop(boundingRect.top())
         self.setRect(rect)
 
         self.updateHandlesPos()
@@ -238,7 +250,6 @@ class ResizableRectItem(QGraphicsRectItem):
         Perform shape interactive resize.
         """
         mousePos = mouseEvent.pos()
-        offset = self.handleSize + self.handleSpace
         boundingRect = self.boundingRect()
         rect = self.rect()
 
@@ -247,7 +258,7 @@ class ResizableRectItem(QGraphicsRectItem):
         fromX = self.mousePressRect.left()
         toX = fromX + mousePos.x() - self.mousePressPos.x()
         boundingRect.setLeft(toX)
-        rect.setLeft(boundingRect.left() + offset)
+        rect.setLeft(boundingRect.left())
         self.setRect(rect)
 
         self.updateHandlesPos()
@@ -257,7 +268,6 @@ class ResizableRectItem(QGraphicsRectItem):
         Perform shape interactive resize.
         """
         mousePos = mouseEvent.pos()
-        offset = self.handleSize + self.handleSpace
         boundingRect = self.boundingRect()
         rect = self.rect()
 
@@ -266,7 +276,7 @@ class ResizableRectItem(QGraphicsRectItem):
         fromX = self.mousePressRect.right()
         toX = fromX + mousePos.x() - self.mousePressPos.x()
         boundingRect.setRight(toX)
-        rect.setRight(boundingRect.right() - offset)
+        rect.setRight(boundingRect.right())
         self.setRect(rect)
 
         self.updateHandlesPos()
@@ -276,7 +286,6 @@ class ResizableRectItem(QGraphicsRectItem):
         Perform shape interactive resize.
         """
         mousePos = mouseEvent.pos()
-        offset = self.handleSize + self.handleSpace
         boundingRect = self.boundingRect()
         rect = self.rect()
 
@@ -288,8 +297,8 @@ class ResizableRectItem(QGraphicsRectItem):
         toY = fromY + mousePos.y() - self.mousePressPos.y()
         boundingRect.setLeft(toX)
         boundingRect.setBottom(toY)
-        rect.setLeft(boundingRect.left() + offset)
-        rect.setBottom(boundingRect.bottom() - offset)
+        rect.setLeft(boundingRect.left())
+        rect.setBottom(boundingRect.bottom())
         self.setRect(rect)
 
         self.updateHandlesPos()
@@ -299,7 +308,6 @@ class ResizableRectItem(QGraphicsRectItem):
         Perform shape interactive resize.
         """
         mousePos = mouseEvent.pos()
-        offset = self.handleSize + self.handleSpace
         boundingRect = self.boundingRect()
         rect = self.rect()
 
@@ -308,7 +316,7 @@ class ResizableRectItem(QGraphicsRectItem):
         fromY = self.mousePressRect.bottom()
         toY = fromY + mousePos.y() - self.mousePressPos.y()
         boundingRect.setBottom(toY)
-        rect.setBottom(boundingRect.bottom() - offset)
+        rect.setBottom(boundingRect.bottom())
         self.setRect(rect)
 
         self.updateHandlesPos()
@@ -318,7 +326,6 @@ class ResizableRectItem(QGraphicsRectItem):
         Perform shape interactive resize.
         """
         mousePos = mouseEvent.pos()
-        offset = self.handleSize + self.handleSpace
         boundingRect = self.boundingRect()
         rect = self.rect()
 
@@ -330,22 +337,11 @@ class ResizableRectItem(QGraphicsRectItem):
         toY = fromY + mousePos.y() - self.mousePressPos.y()
         boundingRect.setRight(toX)
         boundingRect.setBottom(toY)
-        rect.setRight(boundingRect.right() - offset)
-        rect.setBottom(boundingRect.bottom() - offset)
+        rect.setRight(boundingRect.right())
+        rect.setBottom(boundingRect.bottom())
         self.setRect(rect)
 
         self.updateHandlesPos()
-
-    def shape(self):
-        """
-        Returns the shape of this item as a QPainterPath in local coordinates.
-        """
-        path = QPainterPath()
-        path.addRect(self.rect())
-        if self.isSelected():
-            for shape in self.handles:
-                path.addEllipse(shape)
-        return path
 
     def paint(self, painter, option, widget=None):
         """
@@ -357,10 +353,10 @@ class ResizableRectItem(QGraphicsRectItem):
 
         painter.setRenderHint(QPainter.Antialiasing)
         painter.setBrush(QBrush(QColor(255, 0, 0, 255)))
-        painter.setPen(QPen(QColor(0, 0, 0, 255), 1.0, Qt.SolidLine, Qt.RoundCap, Qt.RoundJoin))
+        painter.setPen(Qt.NoPen)
         for handle, rect in enumerate(self.handles):
             if self.handleSelected is None or handle == self.handleSelected:
-                painter.drawEllipse(rect)
+                painter.drawRect(rect)
 
 
 def main():
