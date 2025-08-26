@@ -11,35 +11,35 @@ from PyQt5.QtWidgets import QGraphicsRectItem, QApplication, QGraphicsView, QGra
 
 class ResizableRectItem(QGraphicsRectItem):
 
-    handleTopLeft = 1
-    handleTopMiddle = 2
-    handleTopRight = 3
-    handleMiddleLeft = 4
-    handleMiddleRight = 5
-    handleBottomLeft = 6
-    handleBottomMiddle = 7
-    handleBottomRight = 8
+    handleTopLeft = 0
+    handleTopMiddle = 1
+    handleTopRight = 2
+    handleMiddleLeft = 3
+    handleMiddleRight = 4
+    handleBottomLeft = 5
+    handleBottomMiddle = 6
+    handleBottomRight = 7
 
     handleSize = +8.0
     handleSpace = -4.0
 
-    handleCursors = {
-        handleTopLeft: Qt.SizeFDiagCursor,
-        handleTopMiddle: Qt.SizeVerCursor,
-        handleTopRight: Qt.SizeBDiagCursor,
-        handleMiddleLeft: Qt.SizeHorCursor,
-        handleMiddleRight: Qt.SizeHorCursor,
-        handleBottomLeft: Qt.SizeBDiagCursor,
-        handleBottomMiddle: Qt.SizeVerCursor,
-        handleBottomRight: Qt.SizeFDiagCursor,
-    }
+    handleCursors = (
+        Qt.SizeFDiagCursor, # handleTopLeft
+        Qt.SizeVerCursor, # handleTopMiddle
+        Qt.SizeBDiagCursor, # handleTopRight
+        Qt.SizeHorCursor, # handleMiddleLeft
+        Qt.SizeHorCursor, # handleMiddleRight
+        Qt.SizeBDiagCursor, # handleBottomLeft
+        Qt.SizeVerCursor, # handleBottomMiddle
+        Qt.SizeFDiagCursor, # handleBottomRight
+    )
 
     def __init__(self, *args):
         """
         Initialize the shape.
         """
         super().__init__(*args)
-        self.handles = {}
+        self.handles = [None] * 8
         self.handleSelected = None
         self.mousePressPos = None
         self.mousePressRect = None
@@ -54,7 +54,7 @@ class ResizableRectItem(QGraphicsRectItem):
         """
         Returns the resize handle below the given point.
         """
-        for k, v, in self.handles.items():
+        for k, v, in enumerate(self.handles):
             if v.contains(point):
                 return k
         return None
@@ -81,7 +81,7 @@ class ResizableRectItem(QGraphicsRectItem):
         Executed when the mouse is pressed on the item.
         """
         self.handleSelected = self.handleAt(mouseEvent.pos())
-        if self.handleSelected:
+        if self.handleSelected is not None:
             self.mousePressPos = mouseEvent.pos()
             self.mousePressRect = self.boundingRect()
         super().mousePressEvent(mouseEvent)
@@ -239,7 +239,7 @@ class ResizableRectItem(QGraphicsRectItem):
         path = QPainterPath()
         path.addRect(self.rect())
         if self.isSelected():
-            for shape in self.handles.values():
+            for shape in self.handles:
                 path.addEllipse(shape)
         return path
 
@@ -254,7 +254,7 @@ class ResizableRectItem(QGraphicsRectItem):
         painter.setRenderHint(QPainter.Antialiasing)
         painter.setBrush(QBrush(QColor(255, 0, 0, 255)))
         painter.setPen(QPen(QColor(0, 0, 0, 255), 1.0, Qt.SolidLine, Qt.RoundCap, Qt.RoundJoin))
-        for handle, rect in self.handles.items():
+        for handle, rect in enumerate(self.handles):
             if self.handleSelected is None or handle == self.handleSelected:
                 painter.drawEllipse(rect)
 
