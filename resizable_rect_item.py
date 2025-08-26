@@ -57,7 +57,6 @@ class ResizableRectItem(QGraphicsRectItem):
         Initialize the shape.
         """
         super().__init__(*args)
-        self.handles = [None] * 8
         self.handleSelected = None
         self.mousePressPos = None
         self.mousePressRect = None
@@ -153,14 +152,16 @@ class ResizableRectItem(QGraphicsRectItem):
         B = b.bottom()
         W = b.width()
         H = b.height()
-        self.handles[self.handleTopLeft] = QRectF(L, T, s1 * W, s1 * H)
-        self.handles[self.handleTopMiddle] = QRectF(L + s1 * W, T, s2 * W, s1 * H)
-        self.handles[self.handleTopRight] = QRectF(R - s1 * W, T, s1 * W, s1 * H)
-        self.handles[self.handleMiddleLeft] = QRectF(L, T + s1 * H, s1 * W, s2 * H)
-        self.handles[self.handleMiddleRight] = QRectF(R - s1 * W, T + s1 * H, s1 * W, s2 * H)
-        self.handles[self.handleBottomLeft] = QRectF(L, B - s1 * H, s1 * W, s1 * H)
-        self.handles[self.handleBottomMiddle] = QRectF(L + s1 * W, B - s1 * H, s2 * W, s1 * H)
-        self.handles[self.handleBottomRight] = QRectF(R - s1 * W, B - s1 * H, s1 * W, s1 * H)
+        self.handles = (
+            QRectF(L, T, s1 * W, s1 * H), # handleTopLeft
+            QRectF(L + s1 * W, T, s2 * W, s1 * H), # handleTopMiddle
+            QRectF(R - s1 * W, T, s1 * W, s1 * H), # handleTopRight
+            QRectF(L, T + s1 * H, s1 * W, s2 * H), # handleMiddleLeft
+            QRectF(R - s1 * W, T + s1 * H, s1 * W, s2 * H), # handleMiddleRight
+            QRectF(L, B - s1 * H, s1 * W, s1 * H), # handleBottomLeft
+            QRectF(L + s1 * W, B - s1 * H, s2 * W, s1 * H), # handleBottomMiddle
+            QRectF(R - s1 * W, B - s1 * H, s1 * W, s1 * H), # handleBottomRight
+        )
 
     def updateHandlesPos(self):
         """
