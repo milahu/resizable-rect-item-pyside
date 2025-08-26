@@ -176,7 +176,6 @@ class ResizableRectItem(QGraphicsRectItem):
         offset = self.handleSize + self.handleSpace
         boundingRect = self.boundingRect()
         rect = self.rect()
-        diff = QPointF(0, 0)
 
         self.prepareGeometryChange()
 
@@ -184,8 +183,6 @@ class ResizableRectItem(QGraphicsRectItem):
         fromY = self.mousePressRect.top()
         toX = fromX + mousePos.x() - self.mousePressPos.x()
         toY = fromY + mousePos.y() - self.mousePressPos.y()
-        diff.setX(toX - fromX)
-        diff.setY(toY - fromY)
         boundingRect.setLeft(toX)
         boundingRect.setTop(toY)
         rect.setLeft(boundingRect.left() + offset)
@@ -202,13 +199,11 @@ class ResizableRectItem(QGraphicsRectItem):
         offset = self.handleSize + self.handleSpace
         boundingRect = self.boundingRect()
         rect = self.rect()
-        diff = QPointF(0, 0)
 
         self.prepareGeometryChange()
 
         fromY = self.mousePressRect.top()
         toY = fromY + mousePos.y() - self.mousePressPos.y()
-        diff.setY(toY - fromY)
         boundingRect.setTop(toY)
         rect.setTop(boundingRect.top() + offset)
         self.setRect(rect)
@@ -223,7 +218,6 @@ class ResizableRectItem(QGraphicsRectItem):
         offset = self.handleSize + self.handleSpace
         boundingRect = self.boundingRect()
         rect = self.rect()
-        diff = QPointF(0, 0)
 
         self.prepareGeometryChange()
 
@@ -231,8 +225,6 @@ class ResizableRectItem(QGraphicsRectItem):
         fromY = self.mousePressRect.top()
         toX = fromX + mousePos.x() - self.mousePressPos.x()
         toY = fromY + mousePos.y() - self.mousePressPos.y()
-        diff.setX(toX - fromX)
-        diff.setY(toY - fromY)
         boundingRect.setRight(toX)
         boundingRect.setTop(toY)
         rect.setRight(boundingRect.right() - offset)
@@ -249,13 +241,11 @@ class ResizableRectItem(QGraphicsRectItem):
         offset = self.handleSize + self.handleSpace
         boundingRect = self.boundingRect()
         rect = self.rect()
-        diff = QPointF(0, 0)
 
         self.prepareGeometryChange()
 
         fromX = self.mousePressRect.left()
         toX = fromX + mousePos.x() - self.mousePressPos.x()
-        diff.setX(toX - fromX)
         boundingRect.setLeft(toX)
         rect.setLeft(boundingRect.left() + offset)
         self.setRect(rect)
@@ -270,13 +260,11 @@ class ResizableRectItem(QGraphicsRectItem):
         offset = self.handleSize + self.handleSpace
         boundingRect = self.boundingRect()
         rect = self.rect()
-        diff = QPointF(0, 0)
 
         self.prepareGeometryChange()
 
         fromX = self.mousePressRect.right()
         toX = fromX + mousePos.x() - self.mousePressPos.x()
-        diff.setX(toX - fromX)
         boundingRect.setRight(toX)
         rect.setRight(boundingRect.right() - offset)
         self.setRect(rect)
@@ -291,7 +279,6 @@ class ResizableRectItem(QGraphicsRectItem):
         offset = self.handleSize + self.handleSpace
         boundingRect = self.boundingRect()
         rect = self.rect()
-        diff = QPointF(0, 0)
 
         self.prepareGeometryChange()
 
@@ -299,8 +286,6 @@ class ResizableRectItem(QGraphicsRectItem):
         fromY = self.mousePressRect.bottom()
         toX = fromX + mousePos.x() - self.mousePressPos.x()
         toY = fromY + mousePos.y() - self.mousePressPos.y()
-        diff.setX(toX - fromX)
-        diff.setY(toY - fromY)
         boundingRect.setLeft(toX)
         boundingRect.setBottom(toY)
         rect.setLeft(boundingRect.left() + offset)
@@ -317,13 +302,11 @@ class ResizableRectItem(QGraphicsRectItem):
         offset = self.handleSize + self.handleSpace
         boundingRect = self.boundingRect()
         rect = self.rect()
-        diff = QPointF(0, 0)
 
         self.prepareGeometryChange()
 
         fromY = self.mousePressRect.bottom()
         toY = fromY + mousePos.y() - self.mousePressPos.y()
-        diff.setY(toY - fromY)
         boundingRect.setBottom(toY)
         rect.setBottom(boundingRect.bottom() - offset)
         self.setRect(rect)
@@ -338,7 +321,6 @@ class ResizableRectItem(QGraphicsRectItem):
         offset = self.handleSize + self.handleSpace
         boundingRect = self.boundingRect()
         rect = self.rect()
-        diff = QPointF(0, 0)
 
         self.prepareGeometryChange()
 
@@ -346,8 +328,6 @@ class ResizableRectItem(QGraphicsRectItem):
         fromY = self.mousePressRect.bottom()
         toX = fromX + mousePos.x() - self.mousePressPos.x()
         toY = fromY + mousePos.y() - self.mousePressPos.y()
-        diff.setX(toX - fromX)
-        diff.setY(toY - fromY)
         boundingRect.setRight(toX)
         boundingRect.setBottom(toY)
         rect.setRight(boundingRect.right() - offset)
