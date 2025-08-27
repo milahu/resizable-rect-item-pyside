@@ -7,6 +7,7 @@ import sys
 
 from PySide6.QtCore import (
     Qt,
+    QObject,
     QRectF,
     QPointF,
 )
@@ -27,7 +28,7 @@ from PySide6.QtWidgets import (
 )
 
 
-class ResizableRectItem(QGraphicsRectItem):
+class ResizableRectItem(QGraphicsRectItem, QObject):
 
     handleTopLeft = 0
     handleTopMiddle = 1
@@ -63,6 +64,9 @@ class ResizableRectItem(QGraphicsRectItem):
         """
         Initialize the shape.
         """
+        # this is needed for self.destroyed.connect(self.on_destroyed)
+        # but apparently, the self.destroyed signal is never emitted
+        QObject.__init__(self)
         super().__init__(*args, **kwargs)
         self.move_done_cb = move_done_cb or (lambda *args: None)
         self.resize_done_cb = resize_done_cb or (lambda *args: None)
